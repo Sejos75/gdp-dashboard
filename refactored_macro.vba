@@ -26,11 +26,15 @@ Private Const SALDO_SIN_SUPLENCIA As Long = -7
 ' --- Subrutina Principal ---
 '
 Public Sub ProcesarCuadrante()
+    Dim originalCalcState As Long
+
     On Error GoTo ErrorHandler
 
-    ' --- Optimización de rendimiento y prevención de recursión ---
+    ' --- Optimización de rendimiento y prevención de errores ---
+    originalCalcState = Application.Calculation
+    Application.Calculation = xlCalculationManual
     Application.ScreenUpdating = False
-    Application.EnableEvents = False ' Evita que la macro se dispare a sí misma por eventos de cambio de celda
+    Application.EnableEvents = False ' Evita la recursión por eventos de cambio
 
     Dim ws As Worksheet
     Set ws = ThisWorkbook.Sheets(1)
@@ -66,6 +70,7 @@ ExitSub:
     ' --- Restaurar configuración de la aplicación ---
     Application.EnableEvents = True
     Application.ScreenUpdating = True
+    If originalCalcState <> 0 Then Application.Calculation = originalCalcState
     Exit Sub
 
 ErrorHandler:
